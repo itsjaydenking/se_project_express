@@ -9,6 +9,7 @@ const app = express();
 app.use(express.json());
 app.use("/", userRouter);
 app.use("/", itemRouter);
+
 app.use((req, res) => {
   res.status(404).send({
     message: "Requested resource not found",
