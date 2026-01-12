@@ -10,19 +10,23 @@ export const getClothingItems = (req, res, next) => {
     });
 };
 
-export const createClothingItem = (req, res, next) => {
-  ClothingItem.create({
-    name: req.body.name,
-    weather: req.body.weather,
-    imageUrl: req.body.imageUrl,
-    owner: req.body.owner,
-  })
-    .then((clothingItem) => {
-      res.send(clothingItem);
-    })
-    .catch((err) => {
-      next(err);
-    });
+// export const createClothingItem = (req, res, next) => {
+//   ClothingItem.create({
+//     name: req.body.name,
+//     weather: req.body.weather,
+//     imageUrl: req.body.imageUrl,
+//     owner: req.user._id,
+//   })
+//     .then((clothingItem) => {
+//       res.send(clothingItem);
+//     })
+//     .catch((err) => {
+//       next(err);
+//     });
+// };
+
+export const createClothingItem = (req, res) => {
+  console.log(req.user._id);
 };
 
 export const deleteClothingItem = (req, res, next) => {

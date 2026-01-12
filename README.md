@@ -21,10 +21,10 @@ Before committing your code, make sure you edit the file `sprint.txt` in the roo
 5. Create the project structure
 6. Create a database
 7. Create routes and controllers
+8. Implement a temporary authorization solution
 
 ### Next Steps
 
-8. Implement a temporary authorization solution
 9. Handle errors
 10. Create routes and controllers for likes
 11. Test your project

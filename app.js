@@ -16,6 +16,13 @@ app.use((req, res) => {
   });
 });
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: "69646960aa4f356a23be16d8",
+  };
+  next();
+});
+
 app.listen(PORT, () => {
   console.log(`App is running on port ${PORT}`);
 });
