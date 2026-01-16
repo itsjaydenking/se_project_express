@@ -7,14 +7,14 @@ import {
 
 const itemRouter = express.Router();
 
-itemRouter.get("/items", (req, res, next) => {
-  getClothingItems(req, res, next);
+itemRouter.get("/items", (req, res) => {
+  getClothingItems(req, res);
 });
-itemRouter.delete("/items/:id", (req, res, next) => {
-  deleteClothingItem(req, res, next);
+itemRouter.delete("/items/:id", (req, res) => {
+  deleteClothingItem(req, res);
 });
-itemRouter.post("/items", (req, res, next) => {
-  createClothingItem(req, res, next);
+itemRouter.post("/items", (req, res) => {
+  createClothingItem(req, res);
 });
 
 export default itemRouter;
