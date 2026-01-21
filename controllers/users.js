@@ -1,18 +1,12 @@
 import mongoose from "mongoose";
-import User from "../models/user.js";
 import validator from "validator";
-import { InternalServerErrorMessage } from "../utils/errors.js";
+import User from "../models/user";
+import InternalServerErrorMessage from "../utils/errors";
 
 // Get all users
-export const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => {
-      res.send(users);
-    })
-    .catch((err) => {
-      res.status(500).send({ message: InternalServerErrorMessage });
-    });
-};
+export const getUsers = (req, res) => User.find({})
+    .then((users) => res.send(users))
+    .catch(() => res.status(500).send({ message: InternalServerErrorMessage }));
 
 // Get user by ID
 export const getUser = (req, res) => {
@@ -22,38 +16,35 @@ export const getUser = (req, res) => {
     return res.status(400).send({ message: "Invalid user ID." });
   }
 
-  User.findById(req.params.id)
+  return User.findById(id)
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: "User not found." });
       }
       return res.send(user);
     })
-    .catch((err) => {
-      res.status(500).send({ message: InternalServerErrorMessage });
-    });
+    .catch(() => res.status(500).send({ message: InternalServerErrorMessage }));
 };
 
 // Create a new user
 export const createUser = (req, res) => {
-  if (!req.body.name || !req.body.avatar) {
+  const { name, avatar } = req.body;
+
+  if (!name || !avatar) {
     return res.status(400).send({ message: "Invalid user data." });
-  } else if (2 > req.body.name.length || req.body.name.length > 30) {
+  }
+
+  if (name.length < 2 || name.length > 30) {
     return res
       .status(400)
       .send({ message: "Name must be between 2 and 30 characters." });
-  } else if (!validator.isURL(req.body.avatar)) {
-    return res.status(400).send({ message: "You must enter a valid URL." });
-  } else {
-    User.create({
-      name: req.body.name,
-      avatar: req.body.avatar,
-    })
-      .then((user) => {
-        res.send(user);
-      })
-      .catch((err) => {
-        res.status(500).send({ message: InternalServerErrorMessage });
-      });
   }
+
+  if (!validator.isURL(avatar)) {
+    return res.status(400).send({ message: "You must enter a valid URL." });
+  }
+
+  return User.create({ name, avatar })
+    .then((user) => res.send(user))
+    .catch(() => res.status(500).send({ message: InternalServerErrorMessage }));
 };

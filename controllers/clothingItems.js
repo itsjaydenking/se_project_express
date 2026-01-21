@@ -1,18 +1,12 @@
 import mongoose from "mongoose";
-import ClothingItem from "../models/clothingItem.js";
 import validator from "validator";
-import { InternalServerErrorMessage } from "../utils/errors.js";
+import ClothingItem from "../models/clothingItem";
+import InternalServerErrorMessage from "../utils/errors";
 
 // Get all clothing items
-export const getClothingItems = (req, res) => {
-  ClothingItem.find({})
-    .then((clothingItems) => {
-      res.send(clothingItems);
-    })
-    .catch((err) => {
-      res.status(500).send({ message: InternalServerErrorMessage });
-    });
-};
+export const getClothingItems = (req, res) => ClothingItem.find({})
+    .then((clothingItems) => res.send(clothingItems))
+    .catch(() => res.status(500).send({ message: InternalServerErrorMessage }));
 
 // Create a new clothing item
 export const createClothingItem = (req, res) => {
@@ -33,13 +27,9 @@ export const createClothingItem = (req, res) => {
     return res.status(400).send({ message: "You must enter a valid URL." });
   }
 
-  ClothingItem.create({ name, weather, imageUrl })
-    .then((item) => {
-      res.status(201).send(item);
-    })
-    .catch(() => {
-      res.status(500).send({ message: InternalServerErrorMessage });
-    });
+  return ClothingItem.create({ name, weather, imageUrl })
+    .then((item) => res.status(201).send(item))
+    .catch(() => res.status(500).send({ message: InternalServerErrorMessage }));
 };
 
 // Delete a clothing item by ID
@@ -50,16 +40,14 @@ export const deleteClothingItem = (req, res) => {
     return res.status(400).send({ message: "Invalid item ID." });
   }
 
-  ClothingItem.findByIdAndDelete(id)
+  return ClothingItem.findByIdAndDelete(id)
     .then((clothingItem) => {
       if (!clothingItem) {
         return res.status(404).send({ message: "Item not found." });
       }
-      res.send(clothingItem);
+      return res.send(clothingItem);
     })
-    .catch(() => {
-      res.status(500).send({ message: InternalServerErrorMessage });
-    });
+    .catch(() => res.status(500).send({ message: InternalServerErrorMessage }));
 };
 
 // Like a clothing item
@@ -70,7 +58,7 @@ export const likeClothingItem = (req, res) => {
     return res.status(400).send({ message: "Invalid item ID." });
   }
 
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     itemId,
     { $addToSet: { likes: req.user._id } },
     { new: true }
@@ -79,11 +67,9 @@ export const likeClothingItem = (req, res) => {
       if (!clothingItem) {
         return res.status(404).send({ message: "Item not found." });
       }
-      res.send(clothingItem);
+      return res.send(clothingItem);
     })
-    .catch(() => {
-      res.status(500).send({ message: InternalServerErrorMessage });
-    });
+    .catch(() => res.status(500).send({ message: InternalServerErrorMessage }));
 };
 
 // Dislike a clothing item
@@ -94,7 +80,7 @@ export const dislikeClothingItem = (req, res) => {
     return res.status(400).send({ message: "Invalid item ID." });
   }
 
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     itemId,
     { $pull: { likes: req.user._id } },
     { new: true }
@@ -103,9 +89,7 @@ export const dislikeClothingItem = (req, res) => {
       if (!clothingItem) {
         return res.status(404).send({ message: "Item not found." });
       }
-      res.send(clothingItem);
+      return res.send(clothingItem);
     })
-    .catch(() => {
-      res.status(500).send({ message: InternalServerErrorMessage });
-    });
+    .catch(() => res.status(500).send({ message: InternalServerErrorMessage }));
 };

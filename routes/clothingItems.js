@@ -5,7 +5,7 @@ import {
   deleteClothingItem,
   likeClothingItem,
   dislikeClothingItem,
-} from "../controllers/clothingItems.js";
+} from "../controllers/clothingItems";
 
 const itemRouter = express.Router();
 

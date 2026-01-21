@@ -1,6 +1,5 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import validator from "validator";
-import { Schema } from "mongoose";
 
 const clothingItemSchema = new mongoose.Schema({
   name: {

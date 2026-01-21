@@ -1,25 +1,26 @@
-export default {
+module.exports = {
   env: {
     es2021: true,
     node: true,
   },
-
-  // Add the necessary extensions.
   extends: ["eslint:recommended", "airbnb-base", "prettier"],
+  parserOptions: {
+    ecmaVersion: "latest",
+    sourceType: "module",
+  },
   overrides: [
     {
+      files: ["*.cjs"],
+      excludedFiles: [".eslintrc.js"],
       env: {
         node: true,
       },
-      files: [".eslintrc.{js,cjs}"],
       parserOptions: {
         sourceType: "script",
       },
     },
   ],
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
+  rules: {
+    "no-underscore-dangle": ["error", { allow: ["_id"] }],
   },
-  rules: { "no-underscore-dangle": ["error", { allow: ["_id"] }] },
 };

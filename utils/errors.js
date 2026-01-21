@@ -19,5 +19,6 @@
 //   }
 // };
 
-export const InternalServerErrorMessage =
-  "An error has occurred on the server.";
+const InternalServerErrorMessage = "An error has occurred on the server.";
+
+export default InternalServerErrorMessage;
