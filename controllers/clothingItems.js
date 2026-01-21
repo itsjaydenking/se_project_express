@@ -76,7 +76,7 @@ const deleteClothingItem = (req, res) => {
 
 // Like a clothing item
 const likeClothingItem = (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(BAD_REQUEST).send({ message: "Invalid item ID." });
@@ -102,7 +102,7 @@ const likeClothingItem = (req, res) => {
 
 // Dislike a clothing item
 const dislikeClothingItem = (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(BAD_REQUEST).send({ message: "Invalid item ID." });

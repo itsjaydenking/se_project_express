@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const User = require("../models/user");
 const validator = require("validator");
+const User = require("../models/user");
 
 const {
   BAD_REQUEST,
@@ -21,7 +21,7 @@ const getUsers = (req, res) =>
 
 // Get a user by ID
 const getUser = (req, res) => {
-  const userId = req.params.userId;
+  const { userId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(BAD_REQUEST).send({ message: "Invalid user ID." });
