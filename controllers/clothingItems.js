@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
-
 import ClothingItem from "../models/clothingItem.js";
+import validator from "validator";
 import { InternalServerErrorMessage } from "../utils/errors.js";
 
+// Get all clothing items
 export const getClothingItems = (req, res) => {
   ClothingItem.find({})
     .then((clothingItems) => {
@@ -13,62 +14,98 @@ export const getClothingItems = (req, res) => {
     });
 };
 
+// Create a new clothing item
 export const createClothingItem = (req, res) => {
-  console.log(req.user._id);
+  const { name, weather, imageUrl } = req.body;
+
+  if (!name || !weather || !imageUrl) {
+    return res.status(400).send({ message: "Invalid item data." });
+  }
+  if (name.length < 2 || name.length > 30) {
+    return res
+      .status(400)
+      .send({ message: "Name must be between 2 and 30 characters." });
+  }
+  if (!["hot", "warm", "cold"].includes(weather)) {
+    return res.status(400).send({ message: "Invalid weather value." });
+  }
+  if (!validator.isURL(imageUrl)) {
+    return res.status(400).send({ message: "You must enter a valid URL." });
+  }
+
+  ClothingItem.create({ name, weather, imageUrl })
+    .then((item) => {
+      res.status(201).send(item);
+    })
+    .catch(() => {
+      res.status(500).send({ message: InternalServerErrorMessage });
+    });
 };
 
+// Delete a clothing item by ID
 export const deleteClothingItem = (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).send({ message: "Invalid user ID." });
+    return res.status(400).send({ message: "Invalid item ID." });
   }
 
-  ClothingItem.findByIdAndDelete(req.params.id)
+  ClothingItem.findByIdAndDelete(id)
     .then((clothingItem) => {
+      if (!clothingItem) {
+        return res.status(404).send({ message: "Item not found." });
+      }
       res.send(clothingItem);
     })
-    .catch((err) => {
+    .catch(() => {
       res.status(500).send({ message: InternalServerErrorMessage });
     });
 };
 
+// Like a clothing item
 export const likeClothingItem = (req, res) => {
-  const { id } = req.params;
+  const { itemId } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).send({ message: "Invalid user ID." });
+  if (!mongoose.Types.ObjectId.isValid(itemId)) {
+    return res.status(400).send({ message: "Invalid item ID." });
   }
 
   ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
+    itemId,
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
     .then((clothingItem) => {
+      if (!clothingItem) {
+        return res.status(404).send({ message: "Item not found." });
+      }
       res.send(clothingItem);
     })
-    .catch((err) => {
+    .catch(() => {
       res.status(500).send({ message: InternalServerErrorMessage });
     });
 };
 
+// Dislike a clothing item
 export const dislikeClothingItem = (req, res) => {
-  const { id } = req.params;
+  const { itemId } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).send({ message: "Invalid user ID." });
+  if (!mongoose.Types.ObjectId.isValid(itemId)) {
+    return res.status(400).send({ message: "Invalid item ID." });
   }
 
   ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
+    itemId,
     { $pull: { likes: req.user._id } },
     { new: true }
   )
     .then((clothingItem) => {
+      if (!clothingItem) {
+        return res.status(404).send({ message: "Item not found." });
+      }
       res.send(clothingItem);
     })
-    .catch((err) => {
+    .catch(() => {
       res.status(500).send({ message: InternalServerErrorMessage });
     });
 };

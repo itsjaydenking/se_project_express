@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 import User from "../models/user.js";
+import validator from "validator";
 import { InternalServerErrorMessage } from "../utils/errors.js";
 
+// Get all users
 export const getUsers = (req, res) => {
   User.find({})
     .then((users) => {
@@ -12,6 +14,7 @@ export const getUsers = (req, res) => {
     });
 };
 
+// Get user by ID
 export const getUser = (req, res) => {
   const { id } = req.params;
 
@@ -31,9 +34,16 @@ export const getUser = (req, res) => {
     });
 };
 
+// Create a new user
 export const createUser = (req, res) => {
   if (!req.body.name || !req.body.avatar) {
     return res.status(400).send({ message: "Invalid user data." });
+  } else if (2 > req.body.name.length || req.body.name.length > 30) {
+    return res
+      .status(400)
+      .send({ message: "Name must be between 2 and 30 characters." });
+  } else if (!validator.isURL(req.body.avatar)) {
+    return res.status(400).send({ message: "You must enter a valid URL." });
   } else {
     User.create({
       name: req.body.name,
