@@ -1,24 +1,12 @@
-// export const BadRequestError = class extends Error {
-//   constructor(message) {
-//     super(message);
-//     this.statusCode = 400;
-//   }
-// };
+const BAD_REQUEST = 400;
+const NOT_FOUND = 404;
+const INTERNAL_SERVER_ERROR = 500;
 
-// export const NotFoundError = class extends Error {
-//   constructor(message) {
-//     super(message);
-//     this.statusCode = 404;
-//   }
-// };
+const INTERNAL_SERVER_ERROR_MESSAGE = "An error has occurred on the server.";
 
-// export const InternalServerError = class extends Error {
-//   constructor(message) {
-//     super(message);
-//     this.statusCode = 500;
-//   }
-// };
-
-const InternalServerErrorMessage = "An error has occurred on the server.";
-
-export default InternalServerErrorMessage;
+module.exports = {
+  BAD_REQUEST,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
+  INTERNAL_SERVER_ERROR_MESSAGE,
+};

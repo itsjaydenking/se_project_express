@@ -22,11 +22,11 @@ itemRouter.post("/items", (req, res) => {
   createClothingItem(req, res);
 });
 
-itemRouter.put("/items/:itemId/likes", (req, res) => {
+itemRouter.put("/items/:id/likes", (req, res) => {
   likeClothingItem(req, res);
 });
 
-itemRouter.delete("/items/:itemId/likes", (req, res) => {
+itemRouter.delete("/items/:id/likes", (req, res) => {
   dislikeClothingItem(req, res);
 });
 

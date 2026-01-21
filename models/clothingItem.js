@@ -1,7 +1,9 @@
-const { mongoose, Schema } = require("mongoose");
+const mongoose = require("mongoose");
 const validator = require("validator");
 
-const clothingItemSchema = new mongoose.Schema({
+const { Schema } = mongoose;
+
+const clothingItemSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -17,19 +19,26 @@ const clothingItemSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator(value) {
-        return validator.isURL(value);
-      },
+      validator: (value) => validator.isURL(value),
       message: "You must enter a valid URL.",
     },
   },
-
-  likes: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
-
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
+  likes: {
+    type: [Schema.Types.ObjectId],
+    ref: "user",
+    required: true,
+    default: [],
+  },
   createdAt: {
     type: Date,
+    required: true,
     default: Date.now,
   },
 });
 
-module.exports = mongoose.model("ClothingItem", clothingItemSchema);
+module.exports = mongoose.model("clothingItem", clothingItemSchema);
