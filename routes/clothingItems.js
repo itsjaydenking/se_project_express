@@ -1,11 +1,12 @@
-import express from "express";
-import {
+const express = require("express");
+
+const {
   getClothingItems,
   createClothingItem,
   deleteClothingItem,
   likeClothingItem,
   dislikeClothingItem,
-} from "../controllers/clothingItems";
+} = require("../controllers/clothingItems");
 
 const itemRouter = express.Router();
 
@@ -29,4 +30,4 @@ itemRouter.delete("/items/:itemId/likes", (req, res) => {
   dislikeClothingItem(req, res);
 });
 
-export default itemRouter;
+module.exports = itemRouter;

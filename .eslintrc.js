@@ -8,18 +8,6 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  overrides: [
-    {
-      files: ["*.cjs"],
-      excludedFiles: [".eslintrc.js"],
-      env: {
-        node: true,
-      },
-      parserOptions: {
-        sourceType: "script",
-      },
-    },
-  ],
   rules: {
     "no-underscore-dangle": ["error", { allow: ["_id"] }],
   },
