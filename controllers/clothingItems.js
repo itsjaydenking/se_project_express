@@ -13,11 +13,12 @@ const {
 const getClothingItems = (req, res) =>
   ClothingItem.find({})
     .then((clothingItems) => res.send(clothingItems))
-    .catch(() =>
-      res.status(INTERNAL_SERVER_ERROR).send({
+    .catch((err) => {
+      console.error(err);
+      return res.status(INTERNAL_SERVER_ERROR).send({
         message: INTERNAL_SERVER_ERROR_MESSAGE,
-      })
-    );
+      });
+    });
 
 // Create a new clothing item
 const createClothingItem = (req, res) => {
@@ -45,11 +46,17 @@ const createClothingItem = (req, res) => {
 
   return ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => res.send(item))
-    .catch(() =>
-      res.status(INTERNAL_SERVER_ERROR).send({
+    .catch((err) => {
+      console.error(err);
+
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({ message: err.message });
+      }
+
+      return res.status(INTERNAL_SERVER_ERROR).send({
         message: INTERNAL_SERVER_ERROR_MESSAGE,
-      })
-    );
+      });
+    });
 };
 
 // Delete a clothing item by ID
@@ -67,11 +74,17 @@ const deleteClothingItem = (req, res) => {
       }
       return res.send(clothingItem);
     })
-    .catch(() =>
-      res.status(INTERNAL_SERVER_ERROR).send({
+    .catch((err) => {
+      console.error(err);
+
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "Invalid item ID." });
+      }
+
+      return res.status(INTERNAL_SERVER_ERROR).send({
         message: INTERNAL_SERVER_ERROR_MESSAGE,
-      })
-    );
+      });
+    });
 };
 
 // Like a clothing item
@@ -93,11 +106,17 @@ const likeClothingItem = (req, res) => {
       }
       return res.send(clothingItem);
     })
-    .catch(() =>
-      res.status(INTERNAL_SERVER_ERROR).send({
+    .catch((err) => {
+      console.error(err);
+
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "Invalid item ID." });
+      }
+
+      return res.status(INTERNAL_SERVER_ERROR).send({
         message: INTERNAL_SERVER_ERROR_MESSAGE,
-      })
-    );
+      });
+    });
 };
 
 // Dislike a clothing item
@@ -119,11 +138,17 @@ const dislikeClothingItem = (req, res) => {
       }
       return res.send(clothingItem);
     })
-    .catch(() =>
-      res.status(INTERNAL_SERVER_ERROR).send({
+    .catch((err) => {
+      console.error(err);
+
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "Invalid item ID." });
+      }
+
+      return res.status(INTERNAL_SERVER_ERROR).send({
         message: INTERNAL_SERVER_ERROR_MESSAGE,
-      })
-    );
+      });
+    });
 };
 
 module.exports = {

@@ -13,11 +13,12 @@ const {
 const getUsers = (req, res) =>
   User.find({})
     .then((users) => res.send(users))
-    .catch(() =>
-      res.status(INTERNAL_SERVER_ERROR).send({
+    .catch((err) => {
+      console.error(err);
+      return res.status(INTERNAL_SERVER_ERROR).send({
         message: INTERNAL_SERVER_ERROR_MESSAGE,
-      })
-    );
+      });
+    });
 
 // Get a user by ID
 const getUser = (req, res) => {
@@ -34,11 +35,17 @@ const getUser = (req, res) => {
       }
       return res.send(user);
     })
-    .catch(() =>
-      res.status(INTERNAL_SERVER_ERROR).send({
+    .catch((err) => {
+      console.error(err);
+
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "Invalid user ID." });
+      }
+
+      return res.status(INTERNAL_SERVER_ERROR).send({
         message: INTERNAL_SERVER_ERROR_MESSAGE,
-      })
-    );
+      });
+    });
 };
 
 const createUser = (req, res) => {
@@ -62,11 +69,17 @@ const createUser = (req, res) => {
 
   return User.create({ name, avatar })
     .then((user) => res.send(user))
-    .catch(() =>
-      res.status(INTERNAL_SERVER_ERROR).send({
+    .catch((err) => {
+      console.error(err);
+
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({ message: err.message });
+      }
+
+      return res.status(INTERNAL_SERVER_ERROR).send({
         message: INTERNAL_SERVER_ERROR_MESSAGE,
-      })
-    );
+      });
+    });
 };
 
 module.exports = {

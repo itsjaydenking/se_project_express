@@ -10,24 +10,12 @@ const {
 
 const itemRouter = express.Router();
 
-itemRouter.get("/items", (req, res) => {
-  getClothingItems(req, res);
-});
+itemRouter.get("/", getClothingItems);
+itemRouter.post("/", createClothingItem);
 
-itemRouter.delete("/items/:id", (req, res) => {
-  deleteClothingItem(req, res);
-});
+itemRouter.delete("/:id", deleteClothingItem);
 
-itemRouter.post("/items", (req, res) => {
-  createClothingItem(req, res);
-});
-
-itemRouter.put("/items/:id/likes", (req, res) => {
-  likeClothingItem(req, res);
-});
-
-itemRouter.delete("/items/:id/likes", (req, res) => {
-  dislikeClothingItem(req, res);
-});
+itemRouter.put("/:id/likes", likeClothingItem);
+itemRouter.delete("/:id/likes", dislikeClothingItem);
 
 module.exports = itemRouter;

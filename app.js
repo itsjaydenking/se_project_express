@@ -1,7 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const userRouter = require("./routes/users");
-const itemRouter = require("./routes/clothingItems");
+const routes = require("./routes");
 
 const { PORT = 3001 } = process.env;
 const app = express();
@@ -14,8 +13,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/", userRouter);
-app.use("/", itemRouter);
+app.use("/", routes);
 
 app.use((req, res) => {
   res.status(404).send({
