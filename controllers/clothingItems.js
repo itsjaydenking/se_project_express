@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
 const ClothingItem = require("../models/clothingItem");
 
 const {
@@ -21,31 +20,9 @@ const getClothingItems = (req, res) =>
     });
 
 // Create a new clothing item
-const createClothingItem = (req, res) => {
-  const { name, weather, imageUrl } = req.body;
-
-  if (!name || !weather || !imageUrl) {
-    return res.status(BAD_REQUEST).send({ message: "Invalid item data." });
-  }
-
-  if (name.length < 2 || name.length > 30) {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "Name must be between 2 and 30 characters." });
-  }
-
-  if (!["hot", "warm", "cold"].includes(weather)) {
-    return res.status(BAD_REQUEST).send({ message: "Invalid weather value." });
-  }
-
-  if (!validator.isURL(imageUrl)) {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "You must enter a valid URL." });
-  }
-
-  return ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
-    .then((item) => res.send(item))
+const createClothingItem = (req, res) =>
+  ClothingItem.create({ ...req.body, owner: req.user._id })
+    .then((item) => res.status(201).send(item))
     .catch((err) => {
       console.error(err);
 
@@ -57,7 +34,6 @@ const createClothingItem = (req, res) => {
         message: INTERNAL_SERVER_ERROR_MESSAGE,
       });
     });
-};
 
 // Delete a clothing item by ID
 const deleteClothingItem = (req, res) => {
@@ -68,17 +44,17 @@ const deleteClothingItem = (req, res) => {
   }
 
   return ClothingItem.findByIdAndDelete(id)
-    .then((clothingItem) => {
-      if (!clothingItem) {
-        return res.status(NOT_FOUND).send({ message: "Item not found." });
-      }
-      return res.send(clothingItem);
-    })
+    .orFail()
+    .then((clothingItem) => res.send(clothingItem))
     .catch((err) => {
       console.error(err);
 
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID." });
+      }
+
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "Item not found." });
       }
 
       return res.status(INTERNAL_SERVER_ERROR).send({
@@ -100,17 +76,17 @@ const likeClothingItem = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-    .then((clothingItem) => {
-      if (!clothingItem) {
-        return res.status(NOT_FOUND).send({ message: "Item not found." });
-      }
-      return res.send(clothingItem);
-    })
+    .orFail()
+    .then((clothingItem) => res.send(clothingItem))
     .catch((err) => {
       console.error(err);
 
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID." });
+      }
+
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "Item not found." });
       }
 
       return res.status(INTERNAL_SERVER_ERROR).send({
@@ -132,17 +108,17 @@ const dislikeClothingItem = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .then((clothingItem) => {
-      if (!clothingItem) {
-        return res.status(NOT_FOUND).send({ message: "Item not found." });
-      }
-      return res.send(clothingItem);
-    })
+    .orFail()
+    .then((clothingItem) => res.send(clothingItem))
     .catch((err) => {
       console.error(err);
 
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID." });
+      }
+
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "Item not found." });
       }
 
       return res.status(INTERNAL_SERVER_ERROR).send({

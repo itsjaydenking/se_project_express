@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
 const User = require("../models/user");
 
 const {
@@ -29,17 +28,17 @@ const getUser = (req, res) => {
   }
 
   return User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(NOT_FOUND).send({ message: "User not found." });
-      }
-      return res.send(user);
-    })
+    .orFail()
+    .then((user) => res.send(user))
     .catch((err) => {
       console.error(err);
 
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid user ID." });
+      }
+
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "User not found." });
       }
 
       return res.status(INTERNAL_SERVER_ERROR).send({
@@ -48,27 +47,9 @@ const getUser = (req, res) => {
     });
 };
 
-const createUser = (req, res) => {
-  const { name, avatar } = req.body;
-
-  if (!name || !avatar) {
-    return res.status(BAD_REQUEST).send({ message: "Invalid user data." });
-  }
-
-  if (name.length < 2 || name.length > 30) {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "Name must be between 2 and 30 characters." });
-  }
-
-  if (!validator.isURL(avatar)) {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "You must enter a valid URL." });
-  }
-
-  return User.create({ name, avatar })
-    .then((user) => res.send(user))
+const createUser = (req, res) =>
+  User.create(req.body)
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
       console.error(err);
 
@@ -80,7 +61,6 @@ const createUser = (req, res) => {
         message: INTERNAL_SERVER_ERROR_MESSAGE,
       });
     });
-};
 
 module.exports = {
   getUsers,

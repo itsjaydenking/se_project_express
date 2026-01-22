@@ -6,18 +6,21 @@ const { Schema } = mongoose;
 const clothingItemSchema = new Schema({
   name: {
     type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
+    required: [true, 'The "name" field must be filled in'],
+    minlength: [2, 'The minimum length of the "name" field is 2'],
+    maxlength: [30, 'The maximum length of the "name" field is 30'],
   },
   weather: {
     type: String,
-    required: true,
-    enum: ["hot", "warm", "cold"],
+    required: [true, 'The "weather" field must be filled in'],
+    enum: {
+      values: ["hot", "warm", "cold"],
+      message: 'The "weather" field must be one of: hot, warm, cold',
+    },
   },
   imageUrl: {
     type: String,
-    required: true,
+    required: [true, 'The "imageUrl" field must be filled in'],
     validate: {
       validator: (value) => validator.isURL(value),
       message: "You must enter a valid URL.",
@@ -31,12 +34,10 @@ const clothingItemSchema = new Schema({
   likes: {
     type: [Schema.Types.ObjectId],
     ref: "user",
-    required: true,
     default: [],
   },
   createdAt: {
     type: Date,
-    required: true,
     default: Date.now,
   },
 });
