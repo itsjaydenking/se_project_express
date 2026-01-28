@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
 
 const {
   BAD_REQUEST,
@@ -47,11 +48,21 @@ const getUser = (req, res) => {
     });
 };
 
-const createUser = (req, res) =>
-  User.create(req.body)
+const createUser = (req, res) => {
+  const { name, avatar, email, password } = req.body;
+
+  return bcrypt
+    .hash(password, 10)
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       console.error(err);
+
+      if (err.code === 11000) {
+        return res.status(409).send({
+          message: "This email is already in use.",
+        });
+      }
 
       if (err.name === "ValidationError") {
         return res.status(BAD_REQUEST).send({ message: err.message });
@@ -61,6 +72,7 @@ const createUser = (req, res) =>
         message: INTERNAL_SERVER_ERROR_MESSAGE,
       });
     });
+};
 
 module.exports = {
   getUsers,

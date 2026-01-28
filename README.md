@@ -14,17 +14,19 @@ Before committing your code, make sure you edit the file `sprint.txt` in the roo
 
 ### Steps Completed
 
-1. Set up the project
-2. Set up a linter
-3. Create an entry point
-4. Set up hot reload
-5. Create the project structure
-6. Create a database
-7. Create routes and controllers
-8. Implement a temporary authorization solution
+1. Expand the user schema
+2. Update the createUser controller
 
 ### Next Steps
 
-9. Handle errors
-10. Create routes and controllers for likes
-11. Test your project
+3. Create the login controller
+4. Add routes and controllers for signing up and signing in
+5. Create middleware for authorization
+6. Remove the hard-coded user object
+7. Update the GET /users/:id route
+8. Add a controller and route to modify the user data
+9. Hide the password
+10. Configure user rights
+11. Install cors
+12. Project structure
+13. Test your project
