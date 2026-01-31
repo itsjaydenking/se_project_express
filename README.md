@@ -16,10 +16,10 @@ Before committing your code, make sure you edit the file `sprint.txt` in the roo
 
 1. Expand the user schema
 2. Update the createUser controller
+3. Create the login controller
 
 ### Next Steps
 
-3. Create the login controller
 4. Add routes and controllers for signing up and signing in
 5. Create middleware for authorization
 6. Remove the hard-coded user object

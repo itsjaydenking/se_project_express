@@ -2,12 +2,33 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("../utils/config");
+
 const {
   BAD_REQUEST,
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
   INTERNAL_SERVER_ERROR_MESSAGE,
 } = require("../utils/errors");
+
+// User login
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+
+      return res.send({ token });
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(401).send({ message: "Incorrect email or password" });
+    });
+};
 
 // Get all users
 const getUsers = (req, res) =>
@@ -48,6 +69,7 @@ const getUser = (req, res) => {
     });
 };
 
+// Create a new user
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
@@ -78,4 +100,5 @@ module.exports = {
   getUsers,
   getUser,
   createUser,
+  login,
 };
