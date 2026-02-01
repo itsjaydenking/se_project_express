@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const routes = require("./routes");
+const { NOT_FOUND } = require("./utils/errors");
 
 const { PORT = 3001 } = process.env;
 const app = express();
@@ -11,7 +12,7 @@ app.use(cors());
 app.use("/", routes);
 
 app.use((req, res) => {
-  res.status(404).send({
+  res.status(NOT_FOUND).send({
     message: "Requested resource not found",
   });
 });

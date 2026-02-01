@@ -7,6 +7,8 @@ const User = require("../models/user");
 const {
   BAD_REQUEST,
   NOT_FOUND,
+  CONFLICT,
+  UNAUTHORIZED,
   INTERNAL_SERVER_ERROR,
   INTERNAL_SERVER_ERROR_MESSAGE,
 } = require("../utils/errors");
@@ -30,29 +32,26 @@ const login = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      return res.status(401).send({ message: "Incorrect email or password" });
+      return res
+        .status(UNAUTHORIZED)
+        .send({ message: "Incorrect email or password" });
     });
 };
-
-// Get all users
-const getUsers = (req, res) =>
-  User.find({})
-    .then((users) => res.send(users))
-    .catch((err) => {
-      console.error(err);
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: INTERNAL_SERVER_ERROR_MESSAGE,
-      });
-    });
 
 // Get Current User
 const getCurrentUser = (req, res) => {
   const userId = req.user._id;
 
   return User.findById(userId)
+    .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
       console.error(err);
+
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "User not found." });
+      }
+
       return res.status(INTERNAL_SERVER_ERROR).send({
         message: INTERNAL_SERVER_ERROR_MESSAGE,
       });
@@ -81,7 +80,7 @@ const createUser = (req, res) => {
       console.error(err);
 
       if (err && err.code === 11000) {
-        return res.status(409).send({
+        return res.status(CONFLICT).send({
           message: "This email is already in use.",
         });
       }
@@ -125,7 +124,6 @@ const updateUser = (req, res) => {
 };
 
 module.exports = {
-  getUsers,
   getCurrentUser,
   createUser,
   login,
