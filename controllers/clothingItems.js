@@ -6,10 +6,11 @@ const {
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
   INTERNAL_SERVER_ERROR_MESSAGE,
+  FORBIDDEN,
 } = require("../utils/errors");
 
 // Get all clothing items
-const getClothingItems = (req, res) =>
+const getClothingItems = (req, res) => {
   ClothingItem.find({})
     .then((clothingItems) => res.send(clothingItems))
     .catch((err) => {
@@ -18,9 +19,10 @@ const getClothingItems = (req, res) =>
         message: INTERNAL_SERVER_ERROR_MESSAGE,
       });
     });
+};
 
 // Create a new clothing item
-const createClothingItem = (req, res) =>
+const createClothingItem = (req, res) => {
   ClothingItem.create({ ...req.body, owner: req.user._id })
     .then((item) => res.status(201).send(item))
     .catch((err) => {
@@ -34,8 +36,9 @@ const createClothingItem = (req, res) =>
         message: INTERNAL_SERVER_ERROR_MESSAGE,
       });
     });
+};
 
-// Delete a clothing item by ID
+// Delete a clothing item by ID (only owner can delete)
 const deleteClothingItem = (req, res) => {
   const { id } = req.params;
 
@@ -43,9 +46,17 @@ const deleteClothingItem = (req, res) => {
     return res.status(BAD_REQUEST).send({ message: "Invalid item ID." });
   }
 
-  return ClothingItem.findByIdAndDelete(id)
+  return ClothingItem.findById(id)
     .orFail()
-    .then((clothingItem) => res.send(clothingItem))
+    .then((item) => {
+      // Check ownership
+      if (item.owner.toString() !== req.user._id) {
+        return res.status(FORBIDDEN).send({ message: "Forbidden" });
+      }
+
+      // Owner matches → delete
+      return item.deleteOne().then(() => res.send(item));
+    })
     .catch((err) => {
       console.error(err);
 

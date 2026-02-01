@@ -21,12 +21,13 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, 'The "email" field must be filled in'],
-      unique: [true, "This email is already in use"],
+      unique: true,
       validate: {
         validator: (value) => validator.isEmail(value),
         message: "You must enter a valid email address.",
       },
     },
+
     password: {
       type: String,
       required: [true, 'The "password" field must be filled in'],
