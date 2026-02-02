@@ -1,3 +1,4 @@
+const OK = 200;
 const BAD_REQUEST = 400;
 const UNAUTHORIZED = 401;
 const FORBIDDEN = 403;
@@ -8,6 +9,7 @@ const INTERNAL_SERVER_ERROR = 500;
 const INTERNAL_SERVER_ERROR_MESSAGE = "An error has occurred on the server.";
 
 module.exports = {
+  OK,
   BAD_REQUEST,
   UNAUTHORIZED,
   FORBIDDEN,

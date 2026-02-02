@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 
 const {
+  OK,
   BAD_REQUEST,
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
@@ -24,7 +25,7 @@ const getClothingItems = (req, res) => {
 // Create a new clothing item
 const createClothingItem = (req, res) => {
   ClothingItem.create({ ...req.body, owner: req.user._id })
-    .then((item) => res.status(201).send(item))
+    .then((item) => res.status(OK).send(item))
     .catch((err) => {
       console.error(err);
 

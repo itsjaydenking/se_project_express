@@ -5,6 +5,7 @@ const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
 
 const {
+  OK,
   BAD_REQUEST,
   NOT_FOUND,
   CONFLICT,
@@ -32,9 +33,14 @@ const login = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      return res
-        .status(UNAUTHORIZED)
-        .send({ message: "Incorrect email or password" });
+
+      if (err && err.message === "Incorrect email or password") {
+        return res.status(UNAUTHORIZED).send({ message: err.message });
+      }
+
+      return res.status(INTERNAL_SERVER_ERROR).send({
+        message: INTERNAL_SERVER_ERROR_MESSAGE,
+      });
     });
 };
 
@@ -74,7 +80,7 @@ const createUser = (req, res) => {
     .then((user) => {
       const userObject = user.toObject();
       delete userObject.password;
-      res.status(201).send(userObject);
+      res.status(OK).send(userObject);
     })
     .catch((err) => {
       console.error(err);
