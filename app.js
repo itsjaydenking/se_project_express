@@ -5,6 +5,7 @@ const { errors } = require("celebrate");
 
 const routes = require("./routes");
 const errorHandler = require("./middlewares/error-handler");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 const { NotFoundError } = require("./errors/custom-errors");
 
 const { PORT = 3001 } = process.env;
@@ -14,12 +15,14 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use(requestLogger);
 app.use("/", routes);
 
 app.use((req, res, next) => {
   next(new NotFoundError("Requested resource not found"));
 });
 
+app.use(errorLogger);
 app.use(errors());
 
 app.use(errorHandler);
