@@ -1,27 +1,22 @@
 const bcrypt = require("bcryptjs");
-
 const jwt = require("jsonwebtoken");
+
 const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
 
 const {
-  OK,
-  BAD_REQUEST,
-  NOT_FOUND,
-  CONFLICT,
-  UNAUTHORIZED,
-  INTERNAL_SERVER_ERROR,
-  INTERNAL_SERVER_ERROR_MESSAGE,
-} = require("../utils/errors");
+  BadRequestError,
+  UnauthorizedError,
+  NotFoundError,
+  ConflictError,
+} = require("../errors/custom-errors");
 
 // User login
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(BAD_REQUEST).send({
-      message: "Email and password are required.",
-    });
+    return next(new BadRequestError("Email and password are required."));
   }
 
   return User.findUserByCredentials(email, password)
@@ -29,49 +24,39 @@ const login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      return res.send({ token });
+      res.send({ token });
     })
     .catch((err) => {
-      console.error(err);
-
       if (err && err.message === "Incorrect email or password") {
-        return res.status(UNAUTHORIZED).send({ message: err.message });
+        next(new UnauthorizedError(err.message));
+      } else {
+        next(err);
       }
-
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: INTERNAL_SERVER_ERROR_MESSAGE,
-      });
     });
 };
 
 // Get Current User
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
 
   return User.findById(userId)
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "User not found." });
+        next(new NotFoundError("User not found."));
+      } else {
+        next(err);
       }
-
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: INTERNAL_SERVER_ERROR_MESSAGE,
-      });
     });
 };
 
 // Create a new user
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   if (!name || !avatar || !email || !password) {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "All fields are required." });
+    return next(new BadRequestError("All fields are required."));
   }
 
   return bcrypt
@@ -80,28 +65,20 @@ const createUser = (req, res) => {
     .then((user) => {
       const userObject = user.toObject();
       delete userObject.password;
-      res.status(OK).send(userObject);
+      res.status(200).send(userObject);
     })
     .catch((err) => {
-      console.error(err);
-
       if (err && err.code === 11000) {
-        return res.status(CONFLICT).send({
-          message: "This email is already in use.",
-        });
+        next(new ConflictError("This email is already in use."));
+      } else if (err.name === "ValidationError") {
+        next(new BadRequestError(err.message));
+      } else {
+        next(err);
       }
-
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
-      }
-
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: INTERNAL_SERVER_ERROR_MESSAGE,
-      });
     });
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
 
@@ -113,19 +90,13 @@ const updateUser = (req, res) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
+        next(new BadRequestError(err.message));
+      } else if (err.name === "DocumentNotFoundError") {
+        next(new NotFoundError("User not found."));
+      } else {
+        next(err);
       }
-
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "User not found." });
-      }
-
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: INTERNAL_SERVER_ERROR_MESSAGE,
-      });
     });
 };
 
