@@ -12,27 +12,9 @@ The back-end project is focused on creating a server for the WTWR application. Y
 
 Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
 
-### Steps Completed
+### Extra Information
 
-1. Expand the user schema
-2. Update the createUser controller
-3. Create the login controller
-4. Add routes and controllers for signing up and signing in
-5. Create middleware for authorization
-6. Remove the hard-coded user object
-7. Update the GET /users/:id route
-8. Add a controller and route to modify the user data
-9. Hide the password
-10. Configure user rights
-11. Install cors
-12. Project structure
-13. Test your project
-
-### Next Steps
-
-X. None! All Done
-
-## Project Pitch Video
-
-Check out [this video](https://www.loom.com/share/d936c35d2bf1436aa1ee29a3f1ef7c83), where I describe my
+Deployed Project's Domain Name: https://www.royalcloset.serverpit.com/
+Frontend Github Repo: https://github.com/itsjaydenking/se_project_react
+Project Pitch Video: Check out [this video](https://www.loom.com/share/d936c35d2bf1436aa1ee29a3f1ef7c83), where I describe my
 project and some challenges I faced while building it.
