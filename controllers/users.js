@@ -65,7 +65,7 @@ const createUser = (req, res, next) => {
     .then((user) => {
       const userObject = user.toObject();
       delete userObject.password;
-      res.status(200).send(userObject);
+      res.status(201).send(userObject);
     })
     .catch((err) => {
       if (err && err.code === 11000) {

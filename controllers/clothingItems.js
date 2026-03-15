@@ -16,7 +16,7 @@ const getClothingItems = (req, res, next) => {
 // Create a new clothing item
 const createClothingItem = (req, res, next) => {
   ClothingItem.create({ ...req.body, owner: req.user._id })
-    .then((item) => res.status(200).send(item))
+    .then((item) => res.status(201).send(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
         next(new BadRequestError(err.message));
