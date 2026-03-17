@@ -13,10 +13,7 @@ const {
   validateId,
 } = require("../middlewares/validation");
 
-router
-  .route("/")
-  .get(getClothingItems)
-  .post(validateClothingItemBody, createClothingItem);
+router.post("/", validateClothingItemBody, createClothingItem);
 
 router.route("/:id").delete(validateId, deleteClothingItem);
 
